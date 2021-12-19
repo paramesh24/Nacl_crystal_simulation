@@ -1,0 +1,42 @@
+
+units            real
+atom_style       full
+dimension        3
+boundary         p p p
+
+read_data        nacl.data
+
+mass	       	 1 22.99000
+mass		 2 35.45000
+
+pair_style  	 lj/cut/coul/long 10 # cut-off 1 nm
+kspace_style	 pppm 1.0e-4
+pair_modify	 mix arithmetic tail yes
+
+pair_coeff 	 1 1 0.0552 2.31
+pair_coeff	 2 2 0.1004 4.3
+neighbor         3.0 bin
+neigh_modify     delay 10 check yes
+group            na type 1
+group            cl type 2
+thermo_style     custom time temp etotal press vol density
+thermo           10
+dump             d2 all custom 10 nacl.trj id type x y z 
+dump_modify      d2 sort id
+
+minimize        1e-5 1e-5 1000 1000
+print           "Finished minimizing" 
+
+timestep      1
+velocity      all create 1000 102939 dist gaussian mom yes rot yes
+fix           1 all nve
+run           10000
+unfix         1
+
+
+
+
+
+
+
+
